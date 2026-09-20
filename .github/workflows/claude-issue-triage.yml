@@ -1,0 +1,39 @@
+name: Claude Issue Triage
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  triage:
+    # Only act on the issue body/title, not on assignee/label churn that also fires "edited"
+    if: github.event.action == 'opened' || github.event.changes.body != null || github.event.changes.title != null
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Triage issue with Claude
+        id: claude-triage
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: '--allowedTools "Bash(gh issue view:*),Bash(gh issue edit:*),Bash(gh issue comment:*),Bash(gh label list:*),Bash(gh label create:*)"'
+          prompt: |
+            You are triaging GitHub issue #${{ github.event.issue.number }} in ${{ github.repository }}.
+
+            Steps:
+            1. Run `gh issue view ${{ github.event.issue.number }} --json title,body,comments` to read the full issue.
+            2. Run `gh label list` to see the labels that already exist in this repo.
+            3. Pick the labels that best match the issue from the existing list (e.g. bug, enhancement, question, documentation, good first issue). Only create a new label with `gh label create` if none of the existing ones fit and a new one is clearly needed — prefer reusing existing labels.
+            4. Apply the chosen labels with `gh issue edit ${{ github.event.issue.number }} --add-label "label1,label2"`.
+            5. Write a short technical diagnosis of the problem: likely root cause, affected area of the codebase (this is a vanilla JS/HTML5 Canvas Tetris game — see CLAUDE.md for architecture), and a suggested approach to fix or implement it. This diagnosis is for a developer who will write the fix afterward, so be concrete and reference relevant files/functions (e.g. game.js's collide, tryRotate, clearLines, loop) when relevant.
+            6. Post that diagnosis as a comment with `gh issue comment ${{ github.event.issue.number }} --body "..."`.
+
+            Do not modify any files in the repository. Only use the gh CLI commands listed above.
