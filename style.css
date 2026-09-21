@@ -150,3 +150,85 @@ kbd {
 #restart-btn:hover {
   background: #9bbdff;
 }
+
+/* ---- Skins ---- */
+#skin-select {
+  background: #22223a;
+  color: #e0e0e0;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#skin-select:focus {
+  outline: 1px solid #7aa2f7;
+}
+
+/* Neon */
+body[data-skin="neon"] {
+  background: #000;
+}
+
+body[data-skin="neon"] #board,
+body[data-skin="neon"] #next-canvas {
+  background: #000;
+  border-color: #2a2a2a;
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+}
+
+body[data-skin="neon"] .value {
+  color: #00f5ff;
+  text-shadow: 0 0 8px rgba(0, 245, 255, 0.6);
+}
+
+/* Pastel */
+body[data-skin="pastel"] {
+  background: #f4f0fa;
+  color: #4a4560;
+}
+
+body[data-skin="pastel"] #board,
+body[data-skin="pastel"] #next-canvas {
+  background: #fdfbff;
+  border-color: #dcd4ea;
+  box-shadow: 0 0 40px rgba(120, 100, 160, 0.15);
+}
+
+body[data-skin="pastel"] .label {
+  color: #9a92b4;
+}
+
+body[data-skin="pastel"] .value {
+  color: #8a7fd0;
+}
+
+body[data-skin="pastel"] .controls li {
+  color: #7a748e;
+}
+
+body[data-skin="pastel"] kbd,
+body[data-skin="pastel"] #skin-select {
+  background: #ebe6f5;
+  border-color: #d5cde6;
+  color: #5a5470;
+}
+
+/* Pixel */
+body[data-skin="pixel"] {
+  background: #0d140d;
+}
+
+body[data-skin="pixel"] #board,
+body[data-skin="pixel"] #next-canvas {
+  background: #101a10;
+  border-color: #2e402e;
+  border-radius: 0;
+  image-rendering: pixelated;
+}
+
+body[data-skin="pixel"] .value {
+  color: #8bd17c;
+}
