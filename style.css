@@ -232,3 +232,100 @@ body[data-skin="pixel"] #next-canvas {
 body[data-skin="pixel"] .value {
   color: #8bd17c;
 }
+
+/* ---- Pause menu ---- */
+.pause-box {
+  background: #1a1a25;
+  border: 1px solid #2a2a3a;
+  border-radius: 8px;
+  padding: 24px 32px;
+  min-width: 220px;
+  gap: 10px;
+}
+
+.pause-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: #7aa2f7;
+  margin-bottom: 8px;
+}
+
+.menu-btn {
+  width: 100%;
+  background: #7aa2f7;
+  color: #0f0f17;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: background 0.15s;
+}
+
+.menu-btn:hover {
+  background: #9bbdff;
+}
+
+.menu-btn.secondary {
+  background: #22223a;
+  color: #aaa;
+  border: 1px solid #3a3a5a;
+}
+
+.menu-btn.secondary:hover {
+  background: #2c2c48;
+}
+
+.pause-controls {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-self: stretch;
+  padding: 8px 0;
+  border-top: 1px solid #2a2a3a;
+  border-bottom: 1px solid #2a2a3a;
+}
+
+.pause-controls.hidden {
+  display: none;
+}
+
+.pause-controls li {
+  font-size: 12px;
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.start-level {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: 6px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #888;
+}
+
+.start-level select {
+  background: #22223a;
+  color: #e0e0e0;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.start-level-hint {
+  font-size: 10px;
+  color: #555570;
+}

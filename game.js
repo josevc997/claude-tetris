@@ -150,8 +150,15 @@ const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
+const pauseMenu = document.getElementById('pause-menu');
+const resumeBtn = document.getElementById('resume-btn');
+const pauseRestartBtn = document.getElementById('pause-restart-btn');
+const controlsBtn = document.getElementById('controls-btn');
+const pauseControls = document.getElementById('pause-controls');
+const startLevelSelect = document.getElementById('start-level');
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
+let startLevel = 1;
 
 // ---- Skins: active skin state ----
 const SKIN_STORAGE_KEY = 'tetris.skin';
@@ -248,8 +255,8 @@ function clearLines() {
   if (cleared) {
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
-    dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    level = Math.max(startLevel, Math.floor(lines / 10) + 1);
+    dropInterval = dropIntervalFor(level);
     updateHUD();
   }
 }
@@ -362,18 +369,31 @@ function endGame() {
   overlay.classList.remove('hidden');
 }
 
+// ---- Pause menu ----
+function dropIntervalFor(lvl) {
+  return Math.max(100, 1000 - (lvl - 1) * 90);
+}
+
+function readStartLevel() {
+  const v = parseInt(startLevelSelect.value, 10);
+  startLevel = Number.isInteger(v) && v >= 1 ? v : 1;
+}
+
 function togglePause() {
   if (gameOver) return;
   paused = !paused;
   if (!paused) {
+    pauseMenu.classList.add('hidden');
     lastTime = performance.now();
-    loop(lastTime);
+    animId = requestAnimationFrame(loop);
   } else {
     cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
+    pauseMenu.classList.remove('hidden');
   }
+}
+
+function toggleControls() {
+  pauseControls.classList.toggle('hidden');
 }
 
 function loop(ts) {
@@ -397,23 +417,39 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  readStartLevel();
+  level = startLevel;
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = dropIntervalFor(level);
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
   spawn();
   updateHUD();
   overlay.classList.add('hidden');
+  pauseMenu.classList.add('hidden');
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
 }
 
+const GAME_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', 'Space', 'KeyX'];
+
 document.addEventListener('keydown', e => {
-  if (e.code === 'KeyP') { togglePause(); return; }
-  if (paused || gameOver) return;
+  const inWidget = e.target instanceof HTMLElement && e.target.closest('button, select, input');
+  if (e.code === 'KeyP' || e.code === 'Escape') {
+    // Esc inside the level select closes the dropdown; do not resume the game.
+    if (paused && inWidget && e.code === 'Escape') return;
+    e.preventDefault();
+    togglePause();
+    return;
+  }
+  if (paused) {
+    // Block game keys while menu open; leave native handling for menu widgets.
+    if (!inWidget && GAME_KEYS.includes(e.code)) e.preventDefault();
+    return;
+  }
+  if (gameOver) return;
   switch (e.code) {
     case 'ArrowLeft':
       if (!collide(current.shape, current.x - 1, current.y)) current.x--;
@@ -448,5 +484,23 @@ if (skinSelect) {
   skinSelect.addEventListener('keydown', e => e.stopPropagation());
 }
 applySkin(loadSkinPreference(), false);
+
+resumeBtn.addEventListener('click', () => {
+  resumeBtn.blur();
+  if (paused) togglePause();
+});
+
+pauseRestartBtn.addEventListener('click', () => {
+  pauseRestartBtn.blur();
+  init();
+});
+
+controlsBtn.addEventListener('click', () => {
+  controlsBtn.blur();
+  toggleControls();
+});
+
+// Value is read in init(), so it only applies to the next game.
+startLevelSelect.addEventListener('change', () => startLevelSelect.blur());
 
 init();
